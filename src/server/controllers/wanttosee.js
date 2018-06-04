@@ -1,6 +1,7 @@
 const WantToSee = require("../models").WantToSee;
 
 module.exports = {
+    //TODO: ADD BULK CREATE
     create(req, res) {
         return WantToSee.create({
             movieid: req.body.movieid,

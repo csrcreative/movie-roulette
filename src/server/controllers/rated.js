@@ -1,6 +1,7 @@
 const Rated = require("../models").Rated;
 
 module.exports = {
+    //TODO: ADD BULK CREATE
     create(req, res) {
         return Rated.create({
             movieid: req.body.movieid,

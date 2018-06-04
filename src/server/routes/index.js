@@ -2,6 +2,7 @@ const listsCtrl = require("../controllers").lists;
 const thumbCtrl = require("../controllers").thumbup;
 const rateCtrl = require("../controllers").rated;
 const wantCtrl = require("../controllers").wanttosee;
+const getMovie = require("../external_apis/moviedb").getMovie;
 
 module.exports = app => {
     app.get("/api", (req, res) =>
@@ -9,6 +10,9 @@ module.exports = app => {
             message: "Welcome to the Todos API!"
         })
     );
+
+    //get a random movie
+    app.get('/api/movie', getMovie);
 
     //get all lists
     app.get('/api/lists', listsCtrl.list);
@@ -25,6 +29,9 @@ module.exports = app => {
     //add a rated movie
     app.post('/api/lists/:listid/rated', rateCtrl.create);
 
+    //get a rated movie
+    //app.post('/api/lists/:listid/rated/:movieid', rateCtrl.retrieve);
+
     //delete a rated
     app.delete('/api/lists/:listid/rated/:movieid', rateCtrl.destroy);
 
@@ -39,7 +46,5 @@ module.exports = app => {
 
     //delete a want to see movie
     app.delete('/api/lists/:listid/wanttosee/:movieid', wantCtrl.destroy);
-
-
 
 };

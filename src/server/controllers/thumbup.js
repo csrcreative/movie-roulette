@@ -2,15 +2,20 @@ const ThumbUp = require("../models").ThumbUp;
 
 module.exports = {
     create(req, res) {
-        return ThumbUp.create({
-            movieid: req.body.movieid,
-            title: req.body.title,
-            image: req.body.image,
-            listId: req.params.listid
-            
-        })
-        .then(thumbup => res.status(201).send(thumbup))
-        .catch(error => res.status(400).send(error));
+        if (req.body.length > 1) {
+            return ThumbUp.bulkCreate(req.body)
+            .then(thumbup => res.status(201).send(thumbup))
+            .catch(error => res.status(400).send(error));
+        } else {
+            return ThumbUp.create({
+                movieid: req.body.movieid,
+                title: req.body.title,
+                image: req.body.image,
+                listId: req.params.listid
+            })
+                .then(thumbup => res.status(201).send(thumbup))
+                .catch(error => res.status(400).send(error));
+        }
     },
     destroy(req, res) {
         return ThumbUp.find({
@@ -32,4 +37,4 @@ module.exports = {
             })
             .catch(error => res.status(400).send(error));
     }
-}
+};
