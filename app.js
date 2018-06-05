@@ -10,7 +10,7 @@ const app = express();
 
 let oneYear = 1 * 365 * 24 * 60 * 60 * 1000;
 
-//app.use(compression());
+//app.use(compression());//TODO: enable gzip
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "./src/views"));
 app.use(logger("dev"));
