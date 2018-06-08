@@ -1,15 +1,14 @@
 import React, { Component } from "react";
+import SaveButton from "./saveButton";
 //Add a save button component, this component will do the following
 //generate an id (timestamp) and hash import
 //create a list using generated id
 //create all thumbups, wanttosees, rated with associated id
 class TopBar extends Component {
-    constructor() {
-        super();
-
+    constructor(props) {
+        super(props);
 
     }
-
 
     componentWillMount() {
 
@@ -19,7 +18,7 @@ class TopBar extends Component {
     componentDidUpdate() {}
 
     render() {
-        return <div className="topBar"></div>;
+        return (<div className="topBar"><SaveButton saveClick={this.props.saveClick}/></div>);
     }
 }
 
