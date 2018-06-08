@@ -25,4 +25,8 @@ app.get("/", (req, res) => {
     res.render("index");
 });
 
+app.get("/list/:listid", (req, res) => {
+    res.render("index");
+});
+
 module.exports = app;
