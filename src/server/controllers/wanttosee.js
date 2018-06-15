@@ -2,17 +2,17 @@ const WantToSee = require("../models").WantToSee;
 
 module.exports = {
     create(req, res) {
-        console.log(res.body);
         if (req.body.length > 1) {
             return WantToSee.bulkCreate(req.body)
             .then(wanttosee => res.status(201).send(wanttosee))
             .catch(error => res.status(400).send(error));
-        } else {
+        } 
+        else {
             return WantToSee.create({
-                movieid: req.body.movieid,
-                title: req.body.title,
-                image: req.body.image,
-                listId: req.params.listid
+                movieid: req.body[0].movieid,
+                title: req.body[0].title,
+                image: req.body[0].image,
+                listId: req.body[0].listId
             })
                 .then(wanttosee => res.status(201).send(wanttosee))
                 .catch(error => res.status(400).send(error));

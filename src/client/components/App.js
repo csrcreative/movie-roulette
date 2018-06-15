@@ -1,14 +1,12 @@
-
-
 import React, { Component } from "react";
 import TopBarRegion from "./topBarRegion";
 import RandomMovie from "./randomMovie";
 import ThumbUpRegion from "./thumbUpRegion";
 import WantToSeeRegion from "./wantToSeeRegion";
 
-const Hashids = require('hashids');
+const Hashids = require("hashids");
 const hashids = new Hashids();
-
+//TODO: ADD ENVIRONMENTAL VARS FOR URLS
 class MovieApp extends Component {
     constructor() {
         super();
@@ -21,7 +19,10 @@ class MovieApp extends Component {
             thumbUpClick: false,
             wantToSeeClick: false,
             nextMovieClick: false,
-            saveClick: false
+            saveClick: false,
+            listKey: false,
+            listId: false,
+            listRetrieved: false
         };
 
         this.getMovie = this.getMovie.bind(this);
@@ -41,11 +42,10 @@ class MovieApp extends Component {
             });
     }
 
-    //TODO: DISABLE ON CLICK, UNTIL nextMovie click
     thumbUp(value) {
         this.setState({ thumbUpClick: true });
     }
-    //TODO: DISABLE ON CLICK, UNTIL nextMovie click
+
     wantToSee() {
         this.setState({ wantToSeeClick: true });
     }
@@ -60,82 +60,114 @@ class MovieApp extends Component {
 
     componentWillMount() {
         this.getMovie();
+        //TODO: test this to make sure it only fires when on /list/:userid
+        let id = window.location.href.substr(
+            window.location.href.lastIndexOf("/") + 1
+        );
 
-        let id = window.location.href.substr(window.location.href.lastIndexOf('/') + 1);
-
-        if(id.length > 0) {
+        if (id.length > 0) {
             fetch(`/proxy/list/${id}`)
-            .then(res => res.json())
-            .then(data => {
-                console.log(data);
-            });
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data);
+                    this.setState({
+                        thumbUpMovies: [...data.ThumbUp],
+                        wantToSeeMovies: [...data.WantToSee],
+                        listId: data.id,
+                        listKey: id,
+                        listRetrieved: true
+                    });
+                });
         }
     }
 
     //Watch for state changes
-    //TODO: FIX DUPLICATED RATED ID BUG
     componentDidUpdate() {
+        //if listRetrieved === true
+        //make a fetch POST request on thumbup
         if (this.state.thumbUpClick) {
             let data = {
-                "movieid": this.state.movie.id,
-                "title": this.state.movie.title,
-                "image": this.state.movie.poster_path
-            }
+                movieid: this.state.movie.id,
+                title: this.state.movie.title,
+                image: this.state.movie.poster_path
+            };
 
-            /* 
-                 run a disable button function
-                    disableButton() {
-                        disable: true
+            //TODO: REFACTOR TO NOT DO A BATCH WHEN IN LIST RETREIVED MODE
+            this.setState(
+                prevState => ({
+                    thumbUpMovies: [...prevState.thumbUpMovies, data],
+                    ratedMovies: [...prevState.ratedMovies, data.movieid],
+                    thumbUpClick: false
+                }),
+                () => {
+                    if (this.state.listRetrieved) {
+                        fetch(`/proxy/list/${this.state.listKey}`, {
+                            method: "POST",
+                            body: JSON.stringify({
+                                listId: this.state.listId,
+                                thumbup: data,
+                                rated: data.movieid
+                            }),
+                            headers: {
+                                "content-type": "application/json"
+                            }
+                        });
                     }
-            */
-
-            this.setState(prevState => ({
-                thumbUpMovies: [...prevState.thumbUpMovies, data],
-                ratedMovies: [...prevState.ratedMovies, this.state.movie.id],
-                thumbUpClick: false
-              }));
+                }
+            );
         }
+        //if listRetrieved === true
+        //make a fetch POST request on wantosee
         if (this.state.wantToSeeClick) {
             let data = {
-                "movieid": this.state.movie.id,
-                "title": this.state.movie.title,
-                "image": this.state.movie.poster_path
-            }
-            /* 
-                run a disable button function
-                    disableButton() {
-                        disable: true
-                    }
-            */
-            this.setState(prevState => ({
-                wantToSeeMovies: [...prevState.wantToSeeMovies, data],
-                ratedMovies: [...prevState.ratedMovies, this.state.movie.id],
-                wantToSeeClick: false
-              }));
-        }
-        if (this.state.nextMovieClick) {
+                movieid: this.state.movie.id,
+                title: this.state.movie.title,
+                image: this.state.movie.poster_path
+            };
 
-            /* 
-            /* 
-                 run an ENABLE button function
-                    enableButton() {
-                        disable: false
+            this.setState(
+                prevState => ({
+                    wantToSeeMovies: [...prevState.wantToSeeMovies, data],
+                    ratedMovies: [
+                        ...prevState.ratedMovies,
+                        data.movieid
+                    ],
+                    wantToSeeClick: false
+                }),
+
+                () => {
+                    if (this.state.listRetrieved) {
+                        fetch(`/proxy/list/${this.state.listKey}`, {
+                            method: "POST",
+                            body: JSON.stringify({
+                                listId: this.state.listId,
+                                wanttosee: data,
+                                rated: data.movieid
+                            }),
+                            headers: {
+                                "content-type": "application/json"
+                            }
+                        });
                     }
-            */
-            
+                }
+            );
+        }
+        //if listRetrieved === true
+        //make a fetch POST request on next
+        if (this.state.nextMovieClick) {
             //make sure we aren't adding duplicate ids
             function setArray(prevState, currentState) {
-                if (prevState.ratedMovies.includes(currentState)){
+                if (prevState.ratedMovies.includes(currentState)) {
                     return [...prevState.ratedMovies];
                 }
 
-                return [...prevState.ratedMovies, currentState]
+                return [...prevState.ratedMovies, currentState];
             }
 
             this.setState(prevState => ({
                 ratedMovies: setArray(prevState, this.state.movie.id),
                 nextMovieClick: false
-              }));
+            }));
 
             this.getMovie();
         }
@@ -144,8 +176,12 @@ class MovieApp extends Component {
 
             let data = JSON.stringify({
                 listkey: hash,
-                thumbup: this.state.thumbUpMovies ? this.state.thumbUpMovies : false,
-                wanttosee: this.state.wantToSeeMovies ? this.state.wantToSeeMovies : false,
+                thumbup: this.state.thumbUpMovies
+                    ? this.state.thumbUpMovies
+                    : false,
+                wanttosee: this.state.wantToSeeMovies
+                    ? this.state.wantToSeeMovies
+                    : false,
                 rated: this.state.ratedMovies ? this.state.ratedMovies : false
             });
 
@@ -157,24 +193,38 @@ class MovieApp extends Component {
                 }
             });
 
-            this.setState(prevState => ({
-                saveClick: false
-              }));
+            this.setState({
+                saveClick: false,
+                listKey: hash
+            });
         }
     }
 
     render() {
+        const buttonState = {
+            thumbUp: this.state.thumbUpClick,
+            wantToSee: this.state.wantToSeeClick,
+            nextMovie: this.state.nextMovieClick
+        };
+
         return (
             <div className="movie-roulette">
-                <TopBarRegion saveClick={this.save}/>
+                <TopBarRegion
+                    saveClick={this.save}
+                    listRetrieved={this.state.listRetrieved}
+                    listKey={this.state.listKey}
+                    buttonState={buttonState}
+                />
                 <RandomMovie
                     movie={this.state.movie}
                     thumbUpClick={this.thumbUp}
+                    buttonState={buttonState}
                     wantToSeeClick={this.wantToSee}
+                    nextMovieState={this.state.nextMovieClick}
                     nextMovieClick={this.nextMovie}
                 />
-                <ThumbUpRegion movies={this.state.thumbUpMovies}/>
-                <WantToSeeRegion movies={this.state.wantToSeeMovies}/>
+                <ThumbUpRegion movies={this.state.thumbUpMovies} />
+                <WantToSeeRegion movies={this.state.wantToSeeMovies} />
             </div>
         );
     }

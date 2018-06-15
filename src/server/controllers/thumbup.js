@@ -6,12 +6,13 @@ module.exports = {
             return ThumbUp.bulkCreate(req.body)
             .then(thumbup => res.status(201).send(thumbup))
             .catch(error => res.status(400).send(error));
-        } else {
+        } 
+        else {
             return ThumbUp.create({
-                movieid: req.body.movieid,
-                title: req.body.title,
-                image: req.body.image,
-                listId: req.params.listid
+                movieid: req.body[0].movieid,
+                title: req.body[0].title,
+                image: req.body[0].image,
+                listId: req.body[0].listId
             })
                 .then(thumbup => res.status(201).send(thumbup))
                 .catch(error => res.status(400).send(error));

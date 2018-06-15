@@ -20,11 +20,13 @@ module.exports = {
                 },
                 {
                     model: ThumbUp,
-                    as: "ThumbUp"
+                    as: "ThumbUp",
+                    order: ['createdAt', 'DESC']
                 },
                 {
                     model: WantToSee,
-                    as: "WantToSee"
+                    as: "WantToSee",
+                    order: ['createdAt', 'DESC']
                 }
             ]
         })

@@ -18,9 +18,20 @@ class RandomMovie extends Component {
             <div className="randomMovie">
                 <div>{this.props.movie.title}</div>
                 <div>
-                    <ThumbUpBtn thumbUpClick={this.props.thumbUpClick} />
-                    <WantToSeeBtn wantToSeeClick={this.props.wantToSeeClick}/>
-                    <NextBtn nextMovieClick={this.props.nextMovieClick} />
+                    <ThumbUpBtn
+                        thumbUpClick={this.props.thumbUpClick}
+                        nextMovieState={this.props.nextMovieState}
+                        buttonState={this.props.buttonState}
+                    />
+                    <WantToSeeBtn
+                        wantToSeeClick={this.props.wantToSeeClick}
+                        nextMovieState={this.props.nextMovieState}
+                        buttonState={this.props.buttonState}
+                    />
+                    <NextBtn
+                        nextMovieClick={this.props.nextMovieClick}
+                        thumbUpEnable={this.props.thumbUpEnable}
+                    />
                 </div>
             </div>
         );

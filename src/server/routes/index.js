@@ -1,3 +1,5 @@
+require("dotenv").load(); //loading .env variables
+const server_url = process.env.PRODUCTION_URL || "http://localhost:8000";
 const fetch = require("node-fetch");
 
 const listsCtrl = require("../controllers").lists;
@@ -8,11 +10,14 @@ const getMovie = require("../external_apis/moviedb").getMovie;
 
 const Hashids = require("hashids");
 const hashids = new Hashids();
-
+//TODO: ADD ERROR LOGGING FOR FETCHES
+//TODOL: RESOLVE DISCREPANCY BTW listid VS listId. ITS CREATING PROBLEMS.
+//TODO: USE CONSISTENT VAR NAMES
+//TODO: ADD ACCESS TOKENS TO API ENDPOINTS. USE const expressAccessToken = require("express-access-token");
 module.exports = app => {
     app.get("/api", (req, res) =>
         res.status(200).send({
-            message: "Welcome to the Todos API!"
+            message: "Welcome to the Movies Roulette API!"
         })
     );
 
@@ -32,7 +37,7 @@ module.exports = app => {
     //app.delete('/api/lists/', listsCtrl.destroy);
 
     //add a rated movie
-    app.post("/api/lists/:listid/rated", rateCtrl.create);
+    app.post("/api/lists/:listId/rated", rateCtrl.create);
 
     //get a rated movie
     //app.post('/api/lists/:listid/rated/:movieid', rateCtrl.retrieve);
@@ -54,14 +59,12 @@ module.exports = app => {
 
     //Defining proxies here
     app.post("/proxy/list/", (req, res) => {
-        console.log(req.body.listkey);
         const key = hashids.decode(req.body.listkey);
         const data = JSON.stringify({
             listkey: key[0]
         });
 
-        //fix this url
-        fetch("http://localhost:8000/api/lists", {
+        fetch(`${server_url}/api/lists`, {
             method: "POST",
             body: data,
             headers: {
@@ -73,7 +76,6 @@ module.exports = app => {
             })
             .then(data => {
                 if (req.body.thumbup) {
-
                     let arr = [];
 
                     req.body.thumbup.map(e => {
@@ -85,7 +87,7 @@ module.exports = app => {
                         });
                     });
 
-                    fetch(`http://localhost:8000/api/lists/${data.id}/thumbup`, {
+                    fetch(`${server_url}/api/lists/${data.id}/thumbup`, {
                         method: "POST",
                         body: JSON.stringify(arr),
                         headers: {
@@ -106,7 +108,7 @@ module.exports = app => {
                         });
                     });
 
-                    fetch(`http://localhost:8000/api/lists/${data.id}/wanttosee`, {
+                    fetch(`${server_url}/api/lists/${data.id}/wanttosee`, {
                         method: "POST",
                         body: JSON.stringify(arr),
                         headers: {
@@ -114,8 +116,8 @@ module.exports = app => {
                         }
                     });
                 }
-               
-                if(req.body.rated) {
+
+                if (req.body.rated) {
                     let arr = [];
 
                     req.body.rated.map(e => {
@@ -125,7 +127,7 @@ module.exports = app => {
                         });
                     });
 
-                    fetch(`http://localhost:8000/api/lists/${data.id}/rated`, {
+                    fetch(`${server_url}/api/lists/${data.id}/rated`, {
                         method: "POST",
                         body: JSON.stringify(arr),
                         headers: {
@@ -134,7 +136,6 @@ module.exports = app => {
                     });
                 }
 
-
                 return res.status(201).send(data);
             });
     });
@@ -142,7 +143,7 @@ module.exports = app => {
     app.get("/proxy/list/:listkey", (req, res) => {
         const id = hashids.decode(req.params.listkey);
 
-        return fetch(`http://localhost:8000/api/lists/${id}`, {
+        return fetch(`${server_url}/api/lists/${id}`, {
             method: "GET"
         })
             .then(response => {
@@ -152,5 +153,51 @@ module.exports = app => {
                 return res.status(201).send(data);
             })
             .catch(error => console.log("this is the error: " + error));
+    });
+
+    app.post("/proxy/list/:listkey", (req, res) => {
+        const id = hashids.decode(req.params.listkey);
+        const type =  req.body.thumbup || req.body.wanttosee;
+
+        let data = {
+            movieid: type.movieid,
+            title: type.title,
+            image: type.image,
+            listId: req.body.listId
+        }
+
+        if(req.body.thumbup) {
+            fetch(`${server_url}/api/lists/${data.listId}/thumbup`, {
+                method: "POST",
+                body: JSON.stringify([data]),
+                headers: {
+                    "content-type": "application/json"
+                }
+            })
+            //.catch(error => res.status(400).send(error));
+        }
+
+        if(req.body.wanttosee) {
+            fetch(`${server_url}/api/lists/${data.listId}/wanttosee`, {
+                method: "POST",
+                body: JSON.stringify([data]),
+                headers: {
+                    "content-type": "application/json"
+                }
+            })
+            //.catch(error => res.status(400).send(error));
+        }
+
+        if (req.body.rated) {
+            fetch(`${server_url}/api/lists/${data.listId}/rated`, {
+                method: "POST",
+                body: JSON.stringify({movieid: data.movieid, listId: data.listId}),
+                headers: {
+                    "content-type": "application/json"
+                }
+            });
+            //.catch(error => res.status(400).send(error));
+        }
+        return res.status(201).send(data);
     });
 };
