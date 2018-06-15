@@ -142,7 +142,8 @@ module.exports = app => {
 
     app.get("/proxy/list/:listkey", (req, res) => {
         const id = hashids.decode(req.params.listkey);
-
+        console.log(req.body);
+        console.log(res.body);
         return fetch(`${server_url}/api/lists/${id}`, {
             method: "GET"
         })
