@@ -15,23 +15,31 @@ class RandomMovie extends Component {
 
     render() {
         return (
-            <div className="randomMovie">
-                <div>{this.props.movie.title}</div>
+            <div className="randomMovie flex justify-center pv4">
                 <div>
-                    <ThumbUpBtn
-                        thumbUpClick={this.props.thumbUpClick}
-                        nextMovieState={this.props.nextMovieState}
-                        buttonState={this.props.buttonState}
-                    />
-                    <WantToSeeBtn
-                        wantToSeeClick={this.props.wantToSeeClick}
-                        nextMovieState={this.props.nextMovieState}
-                        buttonState={this.props.buttonState}
-                    />
-                    <NextBtn
-                        nextMovieClick={this.props.nextMovieClick}
-                        thumbUpEnable={this.props.thumbUpEnable}
-                    />
+                    <div>
+                        <img
+                            src={`https://image.tmdb.org/t/p/w342/${
+                                this.props.movie.poster_path
+                            }`}
+                        />
+                    </div>
+                    <div>
+                        <ThumbUpBtn
+                            thumbUpClick={this.props.thumbUpClick}
+                            nextMovieState={this.props.nextMovieState}
+                            buttonState={this.props.buttonState}
+                        />
+                        <WantToSeeBtn
+                            wantToSeeClick={this.props.wantToSeeClick}
+                            nextMovieState={this.props.nextMovieState}
+                            buttonState={this.props.buttonState}
+                        />
+                        <NextBtn
+                            nextMovieClick={this.props.nextMovieClick}
+                            thumbUpEnable={this.props.thumbUpEnable}
+                        />
+                    </div>
                 </div>
             </div>
         );

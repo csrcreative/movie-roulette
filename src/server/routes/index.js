@@ -22,7 +22,7 @@ module.exports = app => {
     );
 
     //get a random movie
-    app.get("/api/movie", getMovie);
+    app.get("/api/movie/:listId", getMovie);
 
     //get all lists
     app.get("/api/lists", listsCtrl.list);
@@ -40,7 +40,7 @@ module.exports = app => {
     app.post("/api/lists/:listId/rated", rateCtrl.create);
 
     //get a rated movie
-    //app.post('/api/lists/:listid/rated/:movieid', rateCtrl.retrieve);
+    app.get("/api/lists/:listId/rated/:movieid", rateCtrl.retrieve);
 
     //delete a rated
     app.delete("/api/lists/:listid/rated/:movieid", rateCtrl.destroy);
@@ -142,8 +142,7 @@ module.exports = app => {
 
     app.get("/proxy/list/:listkey", (req, res) => {
         const id = hashids.decode(req.params.listkey);
-        console.log(req.body);
-        console.log(res.body);
+
         return fetch(`${server_url}/api/lists/${id}`, {
             method: "GET"
         })
@@ -155,50 +154,86 @@ module.exports = app => {
             })
             .catch(error => console.log("this is the error: " + error));
     });
-
+    //TODO: ADD A VARIABLE TO THE PROXY URLS FOR THUMBUP VS WANTTOSEE
     app.post("/proxy/list/:listkey", (req, res) => {
         const id = hashids.decode(req.params.listkey);
-        const type =  req.body.thumbup || req.body.wanttosee;
+        const type = req.body.thumbup || req.body.wanttosee;
 
         let data = {
             movieid: type.movieid,
             title: type.title,
             image: type.image,
             listId: req.body.listId
-        }
+        };
 
-        if(req.body.thumbup) {
+        if (req.body.thumbup) {
             fetch(`${server_url}/api/lists/${data.listId}/thumbup`, {
                 method: "POST",
                 body: JSON.stringify([data]),
                 headers: {
                     "content-type": "application/json"
                 }
-            })
-            //.catch(error => res.status(400).send(error));
+            }).catch(error => res.status(400).send(error));
         }
 
-        if(req.body.wanttosee) {
+        if (req.body.wanttosee) {
             fetch(`${server_url}/api/lists/${data.listId}/wanttosee`, {
                 method: "POST",
                 body: JSON.stringify([data]),
                 headers: {
                     "content-type": "application/json"
                 }
-            })
-            //.catch(error => res.status(400).send(error));
+            }).catch(error => res.status(400).send(error));
         }
 
         if (req.body.rated) {
             fetch(`${server_url}/api/lists/${data.listId}/rated`, {
                 method: "POST",
-                body: JSON.stringify({movieid: data.movieid, listId: data.listId}),
+                body: JSON.stringify({
+                    movieid: data.movieid,
+                    listId: data.listId
+                }),
                 headers: {
                     "content-type": "application/json"
                 }
-            });
-            //.catch(error => res.status(400).send(error));
+            }).catch(error => res.status(400).send(error));
         }
         return res.status(201).send(data);
+    });
+
+    app.post("/proxy/delete/:movieid", (req, res) => {
+        let data = {
+            movieid: req.body.movieid,
+            listId: req.body.listId
+        };
+
+        fetch(
+            `${server_url}/api/lists/${data.listId}/${req.body.type}/${
+                data.movieid
+            }`,
+            {
+                method: "DELETE",
+                body: JSON.stringify(data)
+            }
+        )
+            .then(() => {
+                ///api/lists/:listid/rated/:movieid
+                fetch(
+                    `${server_url}/api/lists/${data.listId}/rated/${
+                        data.movieid
+                    }`,
+                    {
+                        method: "DELETE",
+                        body: JSON.stringify(data),
+                        headers: {
+                            "content-type": "application/json"
+                        }
+                    }
+                );
+            })
+            .then(data => {
+                return res.status(201).send(data);
+            })
+            .catch(error => res.status(400).send(error));
     });
 };

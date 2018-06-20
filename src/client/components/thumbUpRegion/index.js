@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import MoviePoster from "../moviePoster";
 
 class ThumbUpRegion extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
     }
 
     componentWillMount() {}
@@ -13,12 +13,22 @@ class ThumbUpRegion extends Component {
 
     render() {
         return (
-            <div className="thumbUpRegion">
-                {this.props.movies.map(i => {
-                    return (
-                        <MoviePoster key={i.movieid} title={i.title} movieid={i.movieid} image={i.poster_path} />
-                    );
-                })}
+            <div className="thumbUpRegion tc pa4">
+                <h2>Thumbed Up</h2>
+                <div className="flex flex-wrap">
+                    {this.props.movies.map((i, index) => {
+                        return (
+                            <MoviePoster
+                                deleteProps={this.props.deleteProps}
+                                index={index}
+                                key={i.movieid}
+                                title={i.title}
+                                movieid={i.movieid}
+                                image={i.image}
+                            />
+                        );
+                    })}
+                </div>
             </div>
         );
     }

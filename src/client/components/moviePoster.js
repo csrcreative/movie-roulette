@@ -1,8 +1,10 @@
 import React, { Component } from "react";
+import DeleteButton from "./deleteButton";
+
 //TODO: ADD REMOVE BUTTON AND FUNCTION
 class MoviePoster extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
     }
 
     componentWillMount() {}
@@ -12,8 +14,15 @@ class MoviePoster extends Component {
 
     render() {
         return (
-            <div className="moviePoster">
-                {this.props.title}
+            <div className="moviePoster mr4">
+                <div>
+                <img src={`https://image.tmdb.org/t/p/w185/${this.props.image}`} />
+                </div>
+
+                <DeleteButton
+                    deleteProps={this.props.deleteProps}        
+                    index={this.props.index}
+                />
             </div>
         );
     }

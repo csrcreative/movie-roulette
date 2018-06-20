@@ -4,6 +4,7 @@ import RandomMovie from "./randomMovie";
 import ThumbUpRegion from "./thumbUpRegion";
 import WantToSeeRegion from "./wantToSeeRegion";
 
+const lodash = require("lodash");
 const Hashids = require("hashids");
 const hashids = new Hashids();
 //TODO: ADD ENVIRONMENTAL VARS FOR URLS
@@ -20,6 +21,9 @@ class MovieApp extends Component {
             wantToSeeClick: false,
             nextMovieClick: false,
             saveClick: false,
+            deleteThumbUpClick: false,
+            deleteWantToSeeClick: false,
+            deleteId: false,
             listKey: false,
             listId: false,
             listRetrieved: false
@@ -30,10 +34,11 @@ class MovieApp extends Component {
         this.wantToSee = this.wantToSee.bind(this);
         this.nextMovie = this.nextMovie.bind(this);
         this.save = this.save.bind(this);
+        this.delete = this.delete.bind(this);
     }
 
-    getMovie() {
-        fetch("/api/movie")
+    getMovie(listId = false) {
+        fetch(`/api/movie/${listId}`)
             .then(response => {
                 return response.json();
             })
@@ -58,8 +63,19 @@ class MovieApp extends Component {
         this.setState({ saveClick: true });
     }
 
+    delete(o) {
+        this.setState(prevState => {
+            let state = {};
+
+            state["deleteId"] = prevState[o.deleteType][o.index].movieid;
+            state[o.clickType] = true;
+            prevState[o.deleteType].splice(o.index, 1);
+            state[o.deleteType] = prevState[o.deleteType];
+
+            return state;
+        });
+    }
     componentWillMount() {
-        this.getMovie();
         //TODO: test this to make sure it only fires when on /list/:userid
         let id = window.location.href.substr(
             window.location.href.lastIndexOf("/") + 1
@@ -69,15 +85,21 @@ class MovieApp extends Component {
             fetch(`/proxy/list/${id}`)
                 .then(res => res.json())
                 .then(data => {
-                    console.log(data);
-                    this.setState({
-                        thumbUpMovies: [...data.ThumbUp],
-                        wantToSeeMovies: [...data.WantToSee],
-                        listId: data.id,
-                        listKey: id,
-                        listRetrieved: true
-                    });
+                    this.setState(
+                        prevState => ({
+                            thumbUpMovies: [...data.ThumbUp],
+                            wantToSeeMovies: [...data.WantToSee],
+                            listId: data.id,
+                            listKey: id,
+                            listRetrieved: true
+                        }),
+                        () => {
+                            this.getMovie(this.state.listId);
+                        }
+                    );
                 });
+        } else {
+            this.getMovie();
         }
     }
 
@@ -128,10 +150,7 @@ class MovieApp extends Component {
             this.setState(
                 prevState => ({
                     wantToSeeMovies: [...prevState.wantToSeeMovies, data],
-                    ratedMovies: [
-                        ...prevState.ratedMovies,
-                        data.movieid
-                    ],
+                    ratedMovies: [...prevState.ratedMovies, data.movieid],
                     wantToSeeClick: false
                 }),
 
@@ -164,12 +183,19 @@ class MovieApp extends Component {
                 return [...prevState.ratedMovies, currentState];
             }
 
-            this.setState(prevState => ({
-                ratedMovies: setArray(prevState, this.state.movie.id),
-                nextMovieClick: false
-            }));
-
-            this.getMovie();
+            this.setState(
+                prevState => ({
+                    ratedMovies: setArray(prevState, this.state.movie.id),
+                    nextMovieClick: false
+                }),
+                () => {
+                    if (this.state.listRetrieved) {
+                        this.getMovie(this.state.listId);
+                    } else {
+                        this.getMovie();
+                    }
+                }
+            );
         }
         if (this.state.saveClick) {
             let hash = hashids.encode(Date.now());
@@ -198,6 +224,36 @@ class MovieApp extends Component {
                 listKey: hash
             });
         }
+        if (this.state.deleteThumbUpClick && this.state.listRetrieved) {
+            fetch("/proxy/delete/:movieid", {
+                method: "POST",
+                body: JSON.stringify({
+                    movieid: this.state.deleteId,
+                    listId: this.state.listId,
+                    type: "thumbup"
+                }),
+                headers: {
+                    "content-type": "application/json"
+                }
+            })
+                .then(() => this.setState({ deleteThumbUpClick: false }))
+                .catch(error => console.log(error));
+        }
+        if (this.state.deleteWantToSeeClick && this.state.listRetrieved) {
+            fetch("/proxy/delete/:movieid", {
+                method: "POST",
+                body: JSON.stringify({
+                    movieid: this.state.deleteId,
+                    listId: this.state.listId,
+                    type: "wanttosee"
+                }),
+                headers: {
+                    "content-type": "application/json"
+                }
+            })
+                .then(() => this.setState({ deleteWantToSeeClick: false }))
+                .catch(error => console.log(error));
+        }
     }
 
     render() {
@@ -223,8 +279,27 @@ class MovieApp extends Component {
                     nextMovieState={this.state.nextMovieClick}
                     nextMovieClick={this.nextMovie}
                 />
-                <ThumbUpRegion movies={this.state.thumbUpMovies} />
-                <WantToSeeRegion movies={this.state.wantToSeeMovies} />
+                {this.state.thumbUpMovies.length > 0 && (
+                    <ThumbUpRegion
+                        movies={this.state.thumbUpMovies}
+                        deleteProps={{
+                            delete: this.delete,
+                            deleteType: "thumbUpMovies",
+                            clickType: "deleteThumbUpClick"
+                        }}
+                    />
+                )}
+
+                {this.state.wantToSeeMovies.length > 0 && (
+                    <WantToSeeRegion
+                        movies={this.state.wantToSeeMovies}
+                        deleteProps={{
+                            delete: this.delete,
+                            deleteType: "wantToSeeMovies",
+                            clickType: "deleteWantToSeeClick"
+                        }}
+                    />
+                )}
             </div>
         );
     }
