@@ -21,8 +21,8 @@ class DeleteButton extends Component {
     }
     render() {
         return (
-            <button className="deleteBtn" onClick={this.clickHandler}>
-                Delete
+            <button className="deleteBtn mt2 f7 link dim br1 ba ph3 pv2 mb2 dib near-black" onClick={this.clickHandler}>
+                Remove
             </button>
         );
     }

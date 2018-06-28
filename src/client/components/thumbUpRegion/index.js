@@ -13,9 +13,9 @@ class ThumbUpRegion extends Component {
 
     render() {
         return (
-            <div className="thumbUpRegion tc pa4">
+            <div className="thumbUpRegion tc pa4 bg-light-gray">
                 <h2>Thumbed Up</h2>
-                <div className="flex flex-wrap">
+                <div className="grid mw96">
                     {this.props.movies.map((i, index) => {
                         return (
                             <MoviePoster

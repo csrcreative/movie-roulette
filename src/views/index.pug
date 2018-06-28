@@ -1,8 +1,9 @@
 html
-    link(rel="stylesheet" href='https://unpkg.com/tachyons/css/tachyons.min.css' )
+    if production
+        link(href='/css/main.css')
     body
         div(id="root" class="grid-container")
-        script(src='/bundle.js')
+        script(src='/js/bundle.js')
 
 
             

@@ -10,7 +10,7 @@ class RandomMovie extends Component {
 
     componentWillMount() {}
 
-    //Watch for state changes
+    //Watch for state changes//
     componentDidUpdate() {}
 
     render() {
@@ -25,6 +25,7 @@ class RandomMovie extends Component {
                         />
                     </div>
                     <div>
+                        
                         <ThumbUpBtn
                             thumbUpClick={this.props.thumbUpClick}
                             nextMovieState={this.props.nextMovieState}

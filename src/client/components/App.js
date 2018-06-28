@@ -265,6 +265,7 @@ class MovieApp extends Component {
 
         return (
             <div className="movie-roulette">
+            
                 <TopBarRegion
                     saveClick={this.save}
                     listRetrieved={this.state.listRetrieved}
