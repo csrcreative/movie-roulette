@@ -15,7 +15,7 @@ class WantToSeeRegion extends Component {
         return (
             <div className="wantToSeeRegion tc pa4 bg-moon-gray">
                 <h2>Want to See</h2>
-                <div className="flex flex-wrap">
+                <div className="grid mw96">
                     {this.props.movies.map((i, index) => {
                         return (
                             <MoviePoster

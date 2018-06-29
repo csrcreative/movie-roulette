@@ -13,14 +13,35 @@
     border: 0;
 }
 
-
 .deleteBtn {
     cursor:pointer;
 }
+
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    grid-gap: 15px;
+    grid-template-columns: repeat(1, minmax(150px, 1fr));
+    grid-gap: 1rem;
+
+
+    @media all and (min-width: 340px) {
+        grid-template-columns: repeat(2, minmax(150px, 1fr));
+    }
+
+    @media all and (min-width: 640px) {
+        grid-template-columns: repeat(3, minmax(150px, 1fr));
+    }
+
+    @media all and (min-width: 768px) {
+        grid-template-columns: repeat(4, minmax(150px, 1fr));
+    }
+
+    @media all and (min-width: 1000px) {
+        grid-template-columns: repeat(6, minmax(150px, 1fr));
+    }
+
+    @media all and (min-width: 1500px) {
+        grid-template-columns: repeat(8, minmax(150px, 1fr));
+    }
 }
 
 .moviePoster {
