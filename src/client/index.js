@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import MovieApp from './components/App.js';
+import MovieApp from './components/App.jsx';
 
 import "./scss/styles.scss";
 

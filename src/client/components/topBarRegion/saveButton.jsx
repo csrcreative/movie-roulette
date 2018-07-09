@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 
+//TODO: IF USER HAS DELETED ALL THUMBED UP/WANT TO SEE MOVIES BUT HASN'T SAVED, HIDE THE SAVE BUTTON
 class SaveButton extends Component {
     constructor() {
         super();

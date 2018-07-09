@@ -1,13 +1,11 @@
 import React, { Component } from "react";
 
-class WantToSeeBtn extends Component {
+class ThumbUpBtn extends Component {
     constructor(props) {
         super(props);
-
         this.state = {
             disabled: false
         };
-
         this.clickHandler = this.clickHandler.bind(this);
     }
 
@@ -17,31 +15,29 @@ class WantToSeeBtn extends Component {
     componentDidUpdate() {}
 
     componentWillReceiveProps(props, state) {
-        if (this.props.nextMovieState) {
+        if (this.props.buttonState.nextMovie) {
             this.setState({ disabled: false });
         }
-        if(this.props.buttonState.thumbUp) {
-            this.setState({disabled:true});
+        if (this.props.buttonState.wantToSee) {
+            this.setState({ disabled: true });
         }
-
     }
-
     clickHandler() {
-        this.props.wantToSeeClick(true);
-        this.setState({disabled:true});
+        this.props.thumbUpClick(true);
+        this.setState({ disabled: true });
     }
 
     render() {
         return (
             <button
-                className="wantToSeeBtn"
                 onClick={this.clickHandler}
                 disabled={this.state.disabled}
+                className="thumbUpBtn w-50 bg-dark-blue white pt4 pb2 bn before-content"
             >
-                Want to See
+                Liked It
             </button>
         );
     }
 }
 
-export default WantToSeeBtn;
+export default ThumbUpBtn;

@@ -20,7 +20,13 @@ class NextBtn extends Component {
     }
 
     render() {
-        return <button className="NextBtn" onClick={this.clickHandler}>Next</button>;
+        return (
+            <div className="absolute absolute-center-v right--5">
+                <button className="nextBtn br-100 bg-black white w3 h3" onClick={this.clickHandler}>
+                    <div className="show-for-sr">Next</div>
+                </button>
+            </div>
+        );
     }
 }
 

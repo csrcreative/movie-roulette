@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import MoviePoster from "../moviePoster";
+import MoviePoster from "../moviePoster.jsx";
 
 class ThumbUpRegion extends Component {
     constructor(props) {

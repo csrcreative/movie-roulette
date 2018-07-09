@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import SaveButton from "./saveButton";
+import SaveButton from "./saveButton.jsx";
 
 class TopBar extends Component {
     constructor(props) {
@@ -34,12 +34,11 @@ class TopBar extends Component {
 
     render() {
         return (
-            <div className="topBar">
+            <div className="topBar pl4 pr4 bb bw3">
+                <h1 className="ultra lh-solid f1">Movie<br/>Roulette</h1>
                 {this.state.showButton ? (
                     <SaveButton saveClick={this.props.saveClick} />
                 ) : null}
-                {/* Make the url region into a component */}
-                {this.state.url}
             </div>
         );
     }

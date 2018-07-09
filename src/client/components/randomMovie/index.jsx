@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import ThumbUpBtn from "./thumbUpBtn";
-import WantToSeeBtn from "./wantToSeeBtn";
-import NextBtn from "./nextBtn";
+import ThumbUpBtn from "./thumbUpBtn.jsx";
+import WantToSeeBtn from "./wantToSeeBtn.jsx";
+import NextBtn from "./nextBtn.jsx";
 
 class RandomMovie extends Component {
     constructor(props) {
@@ -17,14 +17,20 @@ class RandomMovie extends Component {
         return (
             <div className="randomMovie flex justify-center pv4">
                 <div>
-                    <div>
+                    <div className="relative">
                         <img
                             src={`https://image.tmdb.org/t/p/w342/${
                                 this.props.movie.poster_path
                             }`}
                         />
+
+                                            <NextBtn
+                            nextMovieClick={this.props.nextMovieClick}
+                            thumbUpEnable={this.props.thumbUpEnable}
+                        />
                     </div>
-                    <div>
+
+                    <div className="flex">
                         
                         <ThumbUpBtn
                             thumbUpClick={this.props.thumbUpClick}
@@ -35,10 +41,6 @@ class RandomMovie extends Component {
                             wantToSeeClick={this.props.wantToSeeClick}
                             nextMovieState={this.props.nextMovieState}
                             buttonState={this.props.buttonState}
-                        />
-                        <NextBtn
-                            nextMovieClick={this.props.nextMovieClick}
-                            thumbUpEnable={this.props.thumbUpEnable}
                         />
                     </div>
                 </div>

@@ -1,7 +1,6 @@
 import React, { Component } from "react";
-import DeleteButton from "./deleteButton";
+import DeleteButton from "./deleteButton.jsx";
 
-//TODO: ADD REMOVE BUTTON AND FUNCTION//
 class MoviePoster extends Component {
     constructor(props) {
         super(props);

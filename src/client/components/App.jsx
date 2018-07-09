@@ -1,13 +1,17 @@
 import React, { Component } from "react";
-import TopBarRegion from "./topBarRegion";
-import RandomMovie from "./randomMovie";
-import ThumbUpRegion from "./thumbUpRegion";
-import WantToSeeRegion from "./wantToSeeRegion";
+import TopBarRegion from "./topBarRegion/index.jsx";
+import RandomMovie from "./randomMovie/index.jsx";
+import ThumbUpRegion from "./thumbUpRegion/index.jsx";
+import WantToSeeRegion from "./wantToSeeRegion/index.jsx";
+import Modal from "react-modal";
+import ModalContent from "./topBarRegion/modalContent.jsx";
 
 const lodash = require("lodash");
 const Hashids = require("hashids");
 const hashids = new Hashids();
-//TODO: ADD ENVIRONMENTAL VARS FOR URLS
+
+Modal.setAppElement("#root");
+
 class MovieApp extends Component {
     constructor() {
         super();
@@ -21,12 +25,15 @@ class MovieApp extends Component {
             wantToSeeClick: false,
             nextMovieClick: false,
             saveClick: false,
+            saveUrl: false,
             deleteThumbUpClick: false,
             deleteWantToSeeClick: false,
             deleteId: false,
             listKey: false,
             listId: false,
-            listRetrieved: false
+            listRetrieved: false,
+            showModal: false,
+            modalRequest: false
         };
 
         this.getMovie = this.getMovie.bind(this);
@@ -35,6 +42,16 @@ class MovieApp extends Component {
         this.nextMovie = this.nextMovie.bind(this);
         this.save = this.save.bind(this);
         this.delete = this.delete.bind(this);
+        this.handleOpenModal = this.handleOpenModal.bind(this);
+        this.handleCloseModal = this.handleCloseModal.bind(this);
+    }
+
+    handleOpenModal() {
+        this.setState({ showModal: true});
+    }
+
+    handleCloseModal() {
+        this.setState({ showModal: false });
     }
 
     getMovie(listId = false) {
@@ -221,7 +238,9 @@ class MovieApp extends Component {
 
             this.setState({
                 saveClick: false,
-                listKey: hash
+                saveUrl: `${window.location.href}list/${hash}`,
+                listKey: hash,
+                modalRequest: true
             });
         }
         if (this.state.deleteThumbUpClick && this.state.listRetrieved) {
@@ -254,6 +273,11 @@ class MovieApp extends Component {
                 .then(() => this.setState({ deleteWantToSeeClick: false }))
                 .catch(error => console.log(error));
         }
+        if (this.state.listKey && this.state.modalRequest && this.state.listRetrieved === false) {
+            this.handleOpenModal();
+
+            this.setState({modalRequest: false});
+        }
     }
 
     render() {
@@ -265,7 +289,18 @@ class MovieApp extends Component {
 
         return (
             <div className="movie-roulette">
-            
+                <Modal
+                    isOpen={this.state.showModal}
+                    onRequestClose={this.handleCloseModal}
+                    shouldCloseOnOverlayClick={true}
+                    className="bg-white mw7 mt4 ml-auto mr-auto br2 pa3 relative"
+                    overlayClassName="ModalWindow fixed w-100 h-100 top-0"
+                >
+                    <ModalContent
+                        saveUrl={this.state.saveUrl}
+                        handleCloseModal={this.handleCloseModal}
+                    />
+                </Modal>
                 <TopBarRegion
                     saveClick={this.save}
                     listRetrieved={this.state.listRetrieved}
