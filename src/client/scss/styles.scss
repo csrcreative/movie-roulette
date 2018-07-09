@@ -1,4 +1,10 @@
 @import "tachyons.scss";
+@import url('https://fonts.googleapis.com/css?family=Ultra');
+
+.ultra {
+    font-family: 'Ultra', serif;
+    font-weight: 400;
+}
 
 .show-for-sr {
     position: absolute !important;
@@ -13,10 +19,91 @@
     border: 0;
 }
 
+.before-content {
+    position:relative;
+
+    &:before {
+        content:"";
+        display:block;
+        position:absolute;
+    }
+}
+
+.after-content {
+    position:relative;
+
+    &:before {
+        content:"";
+        display:block;
+        position:absolute;
+    }
+}
+
+.nextBtn {
+    cursor:pointer;
+    background-image: url("/images/svg/arrow-right.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 68%;
+}
+
+.thumbUpBtn {
+    cursor:pointer;
+
+    &:before {
+        background: url("/images/svg/thumb-up.svg");
+        width: 16px;
+        height: 16px;
+        left: 50%;
+        transform: translate3d(-50%, 0,0);
+        z-index: 2;
+        background-size: 100%;
+        background-repeat: no-repeat;
+        top: 0.5rem;
+    }
+
+}
+
+.wantToSeeBtn {
+    cursor:pointer;
+
+    &:before {
+        background: url("/images/svg/plus.svg");
+        width: 16px;
+        height: 16px;
+        left: 50%;
+        transform: translate3d(-50%, 0,0);
+        z-index: 2;
+        background-size: 100%;
+        background-repeat: no-repeat;
+        top: 0.5rem;
+    }
+}
+.top-50p {
+    top:50%;
+}
+
+.absolute-center-v {
+    top:50%;
+    transform: translate3d(0, -50%, 0);
+}
+
+.absolute-center-h {
+    left:50%;
+    transform: translate3d(-50%, 0, 0);
+}
+
+.right--5 {
+    right:-5rem;
+}
+
 .deleteBtn {
     cursor:pointer;
 }
 
+.modalWindow {
+    background-color:rgba(0,0,0,0.7);
+}
 .grid {
     display: grid;
     grid-template-columns: repeat(1, minmax(150px, 1fr));
