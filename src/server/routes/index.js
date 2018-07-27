@@ -15,7 +15,6 @@ const hashids = new Hashids();
 //TODO: ADD ERROR LOGGING FOR FETCHES
 //TODOL: RESOLVE DISCREPANCY BTW listid VS listId. ITS CREATING PROBLEMS.
 //TODO: USE CONSISTENT VAR NAMES
-//TODO: ADD ACCESS TOKENS TO API ENDPOINTS. USE const expressAccessToken = require("express-access-token");
 
 const firewall = (req, res, next) => {
     const authorized = accessToken.includes(req.accessToken);
@@ -30,8 +29,8 @@ module.exports = app => {
         })
     );
 
-    //get a random movie
-    app.get("/api/movie/:listId", expressAccessToken, firewall, getMovie);
+    //get a random movie. this route can accept an optional list id.
+    app.get("/api/movie/:listId?", expressAccessToken, firewall, getMovie);
 
     //get all lists
     app.get("/api/lists", expressAccessToken, firewall, listsCtrl.list);
@@ -107,7 +106,44 @@ module.exports = app => {
     );
 
     //Defining proxies here
-    app.post("/proxy/list/", expressAccessToken, firewall, (req, res) => {
+    app.get(
+        "/proxy/movie/:listkey?",
+        (req, res) => {
+            console.log(req.user);
+            const id = hashids.decode(req.params.listkey) ? hashids.decode(req.params.listkey) : "";
+
+            return fetch(`${server_url}/api/movie/${id}?accessToken=${accessToken[0]}`, {
+                method: "GET"
+            })
+                .then(response => {
+                    return response.json();
+                })
+                .then(data => {
+                    return res.status(201).send(data);
+                })
+                .catch(error => console.log("this is the error: " + error));
+        }
+    );
+
+    app.get(
+        "/proxy/list/:listkey",
+        (req, res) => {
+            const id = hashids.decode(req.params.listkey);
+
+            return fetch(`${server_url}/api/lists/${id}?accessToken=${accessToken[0]}`, {
+                method: "GET"
+            })
+                .then(response => {
+                    return response.json();
+                })
+                .then(data => {
+                    return res.status(201).send(data);
+                })
+                .catch(error => console.log("this is the error: " + error));
+        }
+    );
+
+    app.post("/proxy/list/", (req, res) => {
         const key = hashids.decode(req.body.listkey);
         const data = JSON.stringify({
             listkey: key[0]
@@ -189,30 +225,9 @@ module.exports = app => {
             });
     });
 
-    app.get(
-        "/proxy/list/:listkey",
-        expressAccessToken,
-        firewall,
-        (req, res) => {
-            const id = hashids.decode(req.params.listkey);
-
-            return fetch(`${server_url}/api/lists/${id}?accessToken=${accessToken[0]}`, {
-                method: "GET"
-            })
-                .then(response => {
-                    return response.json();
-                })
-                .then(data => {
-                    return res.status(201).send(data);
-                })
-                .catch(error => console.log("this is the error: " + error));
-        }
-    );
     //TODO: ADD A VARIABLE TO THE PROXY URLS FOR THUMBUP VS WANTTOSEE
     app.post(
         "/proxy/list/:listkey",
-        expressAccessToken,
-        firewall,
         (req, res) => {
             const id = hashids.decode(req.params.listkey);
             const type = req.body.thumbup || req.body.wanttosee;
@@ -262,8 +277,6 @@ module.exports = app => {
 
     app.post(
         "/proxy/delete/:movieid",
-        expressAccessToken,
-        firewall,
         (req, res) => {
             let data = {
                 movieid: req.body.movieid,

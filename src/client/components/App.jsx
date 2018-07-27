@@ -55,7 +55,7 @@ class MovieApp extends Component {
     }
 
     getMovie(listId = false) {
-        fetch(`/api/movie/${listId}`)
+        fetch(`/proxy/movie/${listId ? listId : ""}`)
             .then(response => {
                 return response.json();
             })
