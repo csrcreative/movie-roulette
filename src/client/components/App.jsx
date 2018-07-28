@@ -13,8 +13,8 @@ const hashids = new Hashids();
 Modal.setAppElement("#root");
 
 class MovieApp extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
 
         this.state = {
             movie: false,
@@ -93,31 +93,22 @@ class MovieApp extends Component {
         });
     }
     componentWillMount() {
-        //TODO: test this to make sure it only fires when on /list/:userid
-        let id = window.location.href.substr(
-            window.location.href.lastIndexOf("/") + 1
-        );
+        this.setState(prevState => {
+            let state = {};
 
-        if (id.length > 0) {
-            fetch(`/proxy/list/${id}`)
-                .then(res => res.json())
-                .then(data => {
-                    this.setState(
-                        prevState => ({
-                            thumbUpMovies: [...data.ThumbUp],
-                            wantToSeeMovies: [...data.WantToSee],
-                            listId: data.id,
-                            listKey: id,
-                            listRetrieved: true
-                        }),
-                        () => {
-                            this.getMovie(this.state.listId);
-                        }
-                    );
-                });
-        } else {
-            this.getMovie();
-        }
+            state.movie = this.props.movie;
+            
+            if(this.props.list !== false) {
+                state.thumbUpMovies = this.props.list.ThumbUp;
+                state.wantToSeeMovies = this.props.list.WantToSee;
+                state.listId = this.props.list.id;
+                state.listKey = hashids.encode(this.props.list.listkey);
+                state.listRetrieved = true;
+            }
+
+            return state;
+        });
+
     }
 
     //Watch for state changes

@@ -3,7 +3,10 @@ html
     if production
         link(href='/css/main.css' rel='stylesheet' type='text/css')
     body(class="helvetica")
-        div(id="root" class="grid-container")
+        div(id="root" class="grid-container") !{react}
+
+        script.
+            !{state}
         script(src='/js/bundle.js')
 
 

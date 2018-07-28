@@ -4,7 +4,7 @@ import MovieApp from './components/App.jsx';
 
 import "./scss/styles.scss";
 
-ReactDOM.render(
-  <MovieApp />,
+ReactDOM.hydrate(
+  <MovieApp { ...MovieRoulette.initialState } />,
   document.getElementById('root')
 );
