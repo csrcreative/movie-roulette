@@ -11,7 +11,8 @@ const config = {
     },
     output: {
         filename: "js/bundle.js",
-        path: BUILD_DIR
+        path: BUILD_DIR,
+        chunkFilename: "js/[name].min.js"
     },
     plugins: [
         new webpack.HotModuleReplacementPlugin({
@@ -27,10 +28,11 @@ const config = {
                         loader: "babel-loader",
                         options: {
                             cacheDirectory: true,
+                            plugins: ["@babel/plugin-syntax-dynamic-import", "dynamic-import-node"],
                             presets: [
                                 "@babel/preset-env",
                                 "@babel/preset-react"
-                            ] // Transpiles JSX and ES6
+                            ]
                         }
                     }
                 ]

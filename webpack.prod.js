@@ -13,14 +13,20 @@ const config = {
     },
     output: {
         filename: "js/bundle.js",
-        path: BUILD_DIR
+        path: BUILD_DIR,
+        chunkFilename: "js/[name].min.js"
     },
     optimization: {
         minimizer: [
           new UglifyJSPlugin({
             cache: true,
             parallel: true,
-            sourceMap: true // set to true if you want JS source maps
+            sourceMap: true, // set to true if you want JS source maps
+            uglifyOptions: {
+                output: {
+                    comments: false
+                }
+            }
           }),
           new OptimizeCSSAssetsPlugin({})
         ]
