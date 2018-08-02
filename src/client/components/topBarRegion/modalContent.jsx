@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-const _ = require("lodash");
 
 class ModalContent extends Component {
     constructor() {
@@ -32,6 +31,7 @@ class ModalContent extends Component {
     }
 
     componentWillReceiveProps(props, state) {
+
     }
 
     render() {

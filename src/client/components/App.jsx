@@ -1,16 +1,12 @@
 import React, { Component } from "react";
 import TopBarRegion from "./topBarRegion/index.jsx";
+import AsyncComponent from './topBarRegion/AsyncComponent.jsx';
 import RandomMovie from "./randomMovie/index.jsx";
 import ThumbUpRegion from "./thumbUpRegion/index.jsx";
 import WantToSeeRegion from "./wantToSeeRegion/index.jsx";
-import Modal from "react-modal";
-import ModalContent from "./topBarRegion/modalContent.jsx";
 
-const lodash = require("lodash");
 const Hashids = require("hashids");
 const hashids = new Hashids();
-
-Modal.setAppElement("#root");
 
 class MovieApp extends Component {
     constructor(props) {
@@ -278,20 +274,18 @@ class MovieApp extends Component {
             nextMovie: this.state.nextMovieClick
         };
 
+        const modalProps = {
+            handleCloseModal: this.handleCloseModal,
+            saveUrl: this.state.saveUrl,
+            showModal: this.state.showModal
+
+        }
         return (
             <div className="movie-roulette">
-                <Modal
-                    isOpen={this.state.showModal}
-                    onRequestClose={this.handleCloseModal}
-                    shouldCloseOnOverlayClick={true}
-                    className="bg-white mw7 mt4 ml-auto mr-auto br2 pa3 relative"
-                    overlayClassName="ModalWindow fixed w-100 h-100 top-0"
-                >
-                    <ModalContent
-                        saveUrl={this.state.saveUrl}
-                        handleCloseModal={this.handleCloseModal}
-                    />
-                </Modal>
+
+                {(this.state.thumbUpMovies.length > 0 || this.state.wantToSeeMovies.length > 0) && (
+                    <AsyncComponent modalProps={modalProps} />
+                )}
                 <TopBarRegion
                     saveClick={this.save}
                     listRetrieved={this.state.listRetrieved}
