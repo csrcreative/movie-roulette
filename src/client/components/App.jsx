@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import TopBarRegion from "./topBarRegion/index.jsx";
-import AsyncComponent from './topBarRegion/AsyncComponent.jsx';
+import AsyncComponent from './topBarRegion/asyncComponent.jsx';
 import RandomMovie from "./randomMovie/index.jsx";
 import ThumbUpRegion from "./thumbUpRegion/index.jsx";
 import WantToSeeRegion from "./wantToSeeRegion/index.jsx";
