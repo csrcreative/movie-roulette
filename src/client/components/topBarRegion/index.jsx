@@ -34,7 +34,7 @@ class TopBar extends Component {
 
     render() {
         return (
-            <div className="topBar pl4 pr4 bb bw3">
+            <div className="topBar pl4 pr4 bb bw3 flex justify-between items-center">
                 <h1 className="ultra lh-solid f1">Movie<br/>Roulette</h1>
                 {this.state.showButton ? (
                     <SaveButton saveClick={this.props.saveClick} />

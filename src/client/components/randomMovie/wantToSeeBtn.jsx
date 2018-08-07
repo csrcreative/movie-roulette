@@ -34,7 +34,7 @@ class WantToSeeBtn extends Component {
     render() {
         return (
             <button
-                className="wantToSeeBtn w-50 bg-dark-blue white pt4 pb2 bn before-content"
+                className="wantToSeeBtn w-50 pt2 pb2 ba bw2 b--black"
                 onClick={this.clickHandler}
                 disabled={this.state.disabled}
             >

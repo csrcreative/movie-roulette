@@ -22,8 +22,8 @@ class NextBtn extends Component {
     render() {
         return (
             <div className="absolute absolute-center-v right--5">
-                <button className="nextBtn br-100 bg-black white w3 h3" onClick={this.clickHandler}>
-                    <div className="show-for-sr">Next</div>
+                <button className="nextBtn pa3 ba bw2 b--black" onClick={this.clickHandler}>
+                    Next
                 </button>
             </div>
         );

@@ -30,7 +30,7 @@ class RandomMovie extends Component {
                         />
                     </div>
 
-                    <div className="flex">
+                    <div className="flex mt2">
                         
                         <ThumbUpBtn
                             thumbUpClick={this.props.thumbUpClick}

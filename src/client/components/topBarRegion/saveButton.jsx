@@ -23,7 +23,7 @@ class SaveButton extends Component {
 
     render() {
         return (
-            <button className="saveButton" onClick={this.clickHandler} disabled={this.state.disabled}>
+            <button className="saveButton pa3 ba bw2 b--black" onClick={this.clickHandler} disabled={this.state.disabled}>
                 {
                     this.state.saved ?
                     'Saved' : 'Save'
