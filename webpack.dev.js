@@ -54,18 +54,15 @@ const config = {
     },
     mode: "development",
     target: "web",
-    watch:true,
     devServer: {
         hot: true,
         inline: true,
         host: 'localhost', // Defaults to `localhost`
         port: 3000, // Defaults to 8080
-        proxy: {
-          '/**': {
-            target: 'http://localhost:8000/',
-            secure: false
-          }
-        }
+        proxy: [{
+            context: ['/api', '/proxy', '/'],
+            target: 'http://localhost:8000',
+        }]
     }
 };
 
