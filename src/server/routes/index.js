@@ -106,42 +106,45 @@ module.exports = app => {
     );
 
     //Defining proxies here
-    app.get(
-        "/proxy/movie/:listkey?",
-        (req, res) => {
-            console.log(req.user);
-            const id = hashids.decode(req.params.listkey) ? hashids.decode(req.params.listkey) : "";
+    app.get("/proxy/movie/:listkey?", (req, res) => {
 
-            return fetch(`${server_url}/api/movie/${id}?accessToken=${accessToken[0]}`, {
+        const id = hashids.decode(req.params.listkey)
+            ? hashids.decode(req.params.listkey)
+            : "";
+        return fetch(
+            `${server_url}/api/movie/${id}?accessToken=${accessToken[0]}`,
+            {
                 method: "GET"
+            }
+        )
+            .then(response => {
+                return response.json();
             })
-                .then(response => {
-                    return response.json();
-                })
-                .then(data => {
-                    return res.status(201).send(data);
-                })
-                .catch(error => console.log("this is the error: " + error));
-        }
-    );
+            .then(data => {
+                return res.status(201).send(data);
+            })
+            .catch(error => console.log("this is the error: " + error));
+    });
 
-    app.get(
-        "/proxy/list/:listkey",
-        (req, res) => {
-            const id = hashids.decode(req.params.listkey);
+    app.get("/proxy/lists/:listkey", (req, res) => {
+        const id = hashids.decode(req.params.listkey);
 
-            return fetch(`${server_url}/api/lists/${id}?accessToken=${accessToken[0]}`, {
+        return fetch(
+            `${server_url}/api/lists/${id}?accessToken=${
+                accessToken[0]
+            }`,
+            {
                 method: "GET"
+            }
+        )
+            .then(response => {
+                return response.json();
             })
-                .then(response => {
-                    return response.json();
-                })
-                .then(data => {
-                    return res.status(201).send(data);
-                })
-                .catch(error => console.log("this is the error: " + error));
-        }
-    );
+            .then(data => {
+                return res.status(201).send(data);
+            })
+            .catch(error => console.log("this is the error: " + error));
+    });
 
     app.post("/proxy/list/", (req, res) => {
         const key = hashids.decode(req.body.listkey);
@@ -156,9 +159,7 @@ module.exports = app => {
                 "content-type": "application/json"
             }
         })
-            .then(res => {
-                return res.json();
-            })
+            .then(res => res.json())
             .then(data => {
                 if (req.body.thumbup.length > 0) {
                     let arr = [];
@@ -172,13 +173,18 @@ module.exports = app => {
                         });
                     });
 
-                    fetch(`${server_url}/api/lists/${data.id}/thumbup?accessToken=${accessToken[0]}`, {
-                        method: "POST",
-                        body: JSON.stringify(arr),
-                        headers: {
-                            "content-type": "application/json"
+                    fetch(
+                        `${server_url}/api/lists/${
+                            data.id
+                        }/thumbup?accessToken=${accessToken[0]}`,
+                        {
+                            method: "POST",
+                            body: JSON.stringify(arr),
+                            headers: {
+                                "content-type": "application/json"
+                            }
                         }
-                    });
+                    );
                 }
 
                 if (req.body.wanttosee.length > 0) {
@@ -193,13 +199,18 @@ module.exports = app => {
                         });
                     });
 
-                    fetch(`${server_url}/api/lists/${data.id}/wanttosee?accessToken=${accessToken[0]}`, {
-                        method: "POST",
-                        body: JSON.stringify(arr),
-                        headers: {
-                            "content-type": "application/json"
+                    fetch(
+                        `${server_url}/api/lists/${
+                            data.id
+                        }/wanttosee?accessToken=${accessToken[0]}`,
+                        {
+                            method: "POST",
+                            body: JSON.stringify(arr),
+                            headers: {
+                                "content-type": "application/json"
+                            }
                         }
-                    });
+                    );
                 }
 
                 if (req.body.rated) {
@@ -212,55 +223,73 @@ module.exports = app => {
                         });
                     });
 
-                    fetch(`${server_url}/api/lists/${data.id}/rated?accessToken=${accessToken[0]}`, {
-                        method: "POST",
-                        body: JSON.stringify(arr),
-                        headers: {
-                            "content-type": "application/json"
+                    fetch(
+                        `${server_url}/api/lists/${data.id}/rated?accessToken=${
+                            accessToken[0]
+                        }`,
+                        {
+                            method: "POST",
+                            body: JSON.stringify(arr),
+                            headers: {
+                                "content-type": "application/json"
+                            }
                         }
-                    });
+                    );
                 }
+            })
+            .catch(error => res.status(400).send(error));
 
-                return res.status(201).send(data);
-            });
+        return res.status(201).send(data);
     });
 
     //TODO: ADD A VARIABLE TO THE PROXY URLS FOR THUMBUP VS WANTTOSEE
-    app.post(
-        "/proxy/list/:listkey",
-        (req, res) => {
-            const id = hashids.decode(req.params.listkey);
-            const type = req.body.thumbup || req.body.wanttosee;
+    app.post("/proxy/list/:listkey", (req, res) => {
+        const id = hashids.decode(req.params.listkey);
+        const type = req.body.thumbup || req.body.wanttosee;
 
-            let data = {
-                movieid: type.movieid,
-                title: type.title,
-                image: type.image,
-                listId: req.body.listId
-            };
+        let data = {
+            movieid: type.movieid,
+            title: type.title,
+            image: type.image,
+            listId: req.body.listId
+        };
 
-            if (req.body.thumbup) {
-                fetch(`${server_url}/api/lists/${data.listId}/thumbup?accessToken=${accessToken[0]}`, {
+        if (req.body.thumbup) {
+            fetch(
+                `${server_url}/api/lists/${data.listId}/thumbup?accessToken=${
+                    accessToken[0]
+                }`,
+                {
                     method: "POST",
                     body: JSON.stringify([data]),
                     headers: {
                         "content-type": "application/json"
                     }
-                }).catch(error => res.status(400).send(error));
-            }
+                }
+            ).catch(error => res.status(400).send(error));
+        }
 
-            if (req.body.wanttosee) {
-                fetch(`${server_url}/api/lists/${data.listId}/wanttosee?accessToken=${accessToken[0]}`, {
+        if (req.body.wanttosee) {
+            fetch(
+                `${server_url}/api/lists/${data.listId}/wanttosee?accessToken=${
+                    accessToken[0]
+                }`,
+                {
                     method: "POST",
                     body: JSON.stringify([data]),
                     headers: {
                         "content-type": "application/json"
                     }
-                }).catch(error => res.status(400).send(error));
-            }
+                }
+            ).catch(error => res.status(400).send(error));
+        }
 
-            if (req.body.rated) {
-                fetch(`${server_url}/api/lists/${data.listId}/rated?accessToken=${accessToken[0]}`, {
+        if (req.body.rated) {
+            fetch(
+                `${server_url}/api/lists/${data.listId}/rated?accessToken=${
+                    accessToken[0]
+                }`,
+                {
                     method: "POST",
                     body: JSON.stringify({
                         movieid: data.movieid,
@@ -269,21 +298,20 @@ module.exports = app => {
                     headers: {
                         "content-type": "application/json"
                     }
-                }).catch(error => res.status(400).send(error));
-            }
-            return res.status(201).send(data);
+                }
+            ).catch(error => res.status(400).send(error));
         }
-    );
+        return res.status(201).send(data);
+    });
 
-    app.post(
-        "/proxy/delete/:movieid",
-        (req, res) => {
-            let data = {
-                movieid: req.body.movieid,
-                listId: req.body.listId
-            };
+    app.post("/proxy/delete/:movieid", (req, res) => {
+        let data = {
+            movieid: req.body.movieid,
+            listId: req.body.listId
+        };
 
-            fetch(
+        let deleteMovie = () => {
+            return fetch(
                 `${server_url}/api/lists/${data.listId}/${req.body.type}/${
                     data.movieid
                 }?accessToken=${accessToken[0]}`,
@@ -291,26 +319,28 @@ module.exports = app => {
                     method: "DELETE",
                     body: JSON.stringify(data)
                 }
-            )
-                .then(() => {
-                    ///api/lists/:listid/rated/:movieid
-                    fetch(
-                        `${server_url}/api/lists/${data.listId}/rated/${
-                            data.movieid
-                        }?accessToken=${accessToken[0]}`,
-                        {
-                            method: "DELETE",
-                            body: JSON.stringify(data),
-                            headers: {
-                                "content-type": "application/json"
-                            }
-                        }
-                    );
-                })
-                .then(data => {
-                    return res.status(201).send(data);
-                })
-                .catch(error => res.status(400).send(error));
-        }
-    );
+            );
+        };
+
+        let deleteRated = () => {
+            return fetch(
+                `${server_url}/api/lists/${data.listId}/rated/${
+                    data.movieid
+                }?accessToken=${accessToken[0]}`,
+                {
+                    method: "DELETE",
+                    body: JSON.stringify(data),
+                    headers: {
+                        "content-type": "application/json"
+                    }
+                }
+            );
+        };
+
+        Promise.all([deleteMovie(), deleteRated()])
+            .then(data => {
+                return res.status(201).send(data);
+            })
+            .catch(error => res.status(400).send(error));
+    });
 };
