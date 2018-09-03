@@ -44,7 +44,7 @@ function _loadMovie(req, res) {
 }
 
 function _loadList(req, res) {
-    return fetch(`${server_url}/proxy/list/${req.params.listid}`)
+    return fetch(`${server_url}/proxy/lists/${req.params.listkey}`)
         .then(response => response.json())
         .then(json => {
             return json;
@@ -72,7 +72,7 @@ app.get("/", (req, res) => {
 
 });
 
-app.get("/list/:listid", (req, res) => {
+app.get("/list/:listkey", (req, res) => {
     let data = {};
     const movie = _loadMovie(req, res);
 
