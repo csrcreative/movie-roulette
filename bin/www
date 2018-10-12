@@ -1,4 +1,4 @@
-require('newrelic');
+//require('newrelic');
 
 require( "@babel/register" )( {
     presets: [ "@babel/preset-env" ],
